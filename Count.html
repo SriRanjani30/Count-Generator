@@ -14,58 +14,126 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            align-items: center;
             height: 100vh;
         }
         .container {
-            margin-top: 50px;
-            padding: 20px;
+            padding: 25px;
             background-color: #ffffff;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
-            margin-left: auto;
-            margin-right: auto;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
+            width: 400px;
+            text-align: center;
+            transition: box-shadow 0.3s;
+        }
+        .container:hover {
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.35);
         }
         h1 {
-            font-size: 36px;
+            font-size: 40px;
             color: #333;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
         #counter {
-            font-size: 48px;
+            font-size: 50px;
             color: #007bff;
-            margin: 20px 0;
-            padding: 10px;
-            border: 2px solid #007bff;
-            border-radius: 5px;
+            margin: 25px 0;
+            padding: 20px;
+            border: 4px solid #007bff;
+            border-radius: 10px;
             background-color: #e7f1ff;
+            transition: background-color 0.3s, color 0.3s, transform 0.3s;
+        }
+        #counter.green {
+            background-color: #d4edda;
+            color: #28a745;
+            border-color: #28a745;
+            transform: scale(1.1);
+        }
+        #counter.red {
+            background-color: #f8d7da;
+            color: #dc3545;
+            border-color: #dc3545;
+            transform: scale(1.1);
         }
         button {
-            font-size: 20px;
-            padding: 10px 20px;
-            margin: 10px;
+            font-size: 22px;
+            padding: 15px 30px;
+            margin: 15px;
             background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
         }
         button:hover {
             background-color: #0056b3;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 86, 179, 0.4);
         }
         button:active {
             background-color: #003f7f;
             transform: scale(0.98);
+            box-shadow: 0 2px 5px rgba(0, 63, 127, 0.3);
         }
         #resetButton {
             background-color: #f44336;
+            box-shadow: 0 4px 10px rgba(244, 67, 54, 0.3);
         }
         #resetButton:hover {
             background-color: #d32f2f;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(211, 47, 47, 0.4);
         }
         #resetButton:active {
             background-color: #b71c1c;
+            transform: scale(0.98);
+            box-shadow: 0 2px 5px rgba(183, 28, 28, 0.3);
+        }
+        #decrementButton {
+            background-color: #ff9800;
+            box-shadow: 0 4px 10px rgba(255, 152, 0, 0.3);
+        }
+        #decrementButton:hover {
+            background-color: #e68900;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(230, 137, 0, 0.4);
+        }
+        #decrementButton:active {
+            background-color: #bf7100;
+            transform: scale(0.98);
+            box-shadow: 0 2px 5px rgba(191, 113, 0, 0.3);
+        }
+        .history {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            max-height: 150px;
+            overflow-y: auto;
+            text-align: left;
+        }
+        .history p {
+            margin: 5px 0;
+            font-size: 18px;
+            color: #555;
+        }
+        footer {
+            margin-top: 50px;
+            font-size: 14px;
+            color: #777;
+        }
+        footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -74,25 +142,52 @@
     <h1>Simple Counter</h1>
     <div id="counter">0</div>
     <button onclick="increment()">Increment</button>
+    <button id="decrementButton" onclick="decrement()">Decrement</button>
     <button id="resetButton" onclick="reset()">Reset</button>
+    <div class="history" id="history">
+        <h2>History</h2>
+    </div>
 </div>
-
 <script>
     let count = 0;
+    const history = [];
+    function updateCounter() {
+        const counterElement = document.getElementById('counter');
+        counterElement.innerText = count;
+        if (count > 0) {
+            counterElement.className = 'green';
+        } else if (count < 0) {
+            counterElement.className = 'red';
+        } else {
+            counterElement.className = '';
+        }
+        updateHistory();
+    }
+    function updateHistory() {
+        const historyElement = document.getElementById('history');
+        historyElement.innerHTML = '<h2>History</h2>';
+        for (let i = 0; i < history.length; i++) {
+            const p = document.createElement('p');
+            p.innerText = history[i];
+            historyElement.appendChild(p);
+        }
+    }
     function increment() {
         count++;
-        document.getElementById('counter').innerText = count;
-        if(count >= 10) {
-            document.getElementById('counter').style.color = '#4caf50';
-        } else {
-            document.getElementById('counter').style.color = '#007bff';
-        }
+        history.push('Incremented to ' + count);
+        updateCounter();
+    }
+    function decrement() {
+        count--;
+        history.push('Decremented to ' + count);
+        updateCounter();
     }
     function reset() {
         count = 0;
-        document.getElementById('counter').innerText = count;
-        document.getElementById('counter').style.color = '#007bff';
+        history.push('Reset to 0');
+        updateCounter();
     }
 </script>
+
 </body>
 </html>
